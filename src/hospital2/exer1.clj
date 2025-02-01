@@ -18,6 +18,23 @@
     (pprint (adiciona-paciente pacientes mateus))))
 
 
-(chamando-pacientes)
+;(chamando-pacientes)
+
+
+(defrecord Paciente [id nome nascimento])
+
+(println (->Paciente 15 "Miguel" "11/04/06"))
+(pprint (->Paciente 15 "Miguel" "11/04/06"))
+(pprint (Paciente. 15 "Miguel" "11/04/06"))
+(pprint (map->Paciente { :id 15 :nome "Miguel" :nascimento "11/04/06"}))
+
+(let [miguel (->Paciente 15 "Miguel" "11/04/06")]
+  (pprint (:id miguel))
+   (pprint (vals miguel)))
+
+(pprint (map->Paciente { :id 15 :nome "Miguel" :nascimento "11/04/06" :rg "23456231-5"}))
+(pprint (Paciente. nil "Miguel" "11/04/06" ))
+(pprint (map->Paciente { :nome "Miguel" :nascimento "11/04/06" :rg "23456231-5"}))
+(pprint (assoc (Paciente. nil "Miguel" "11/04/06") :id 7))
 
 
