@@ -61,7 +61,7 @@
 
 (defmulti deve-assinar-pre-autorizacao-pedido? tipo-de-autorizador)
 
-(defmethod deve-assinar-pre-autorizacao-pedido? :sempre-autorizado [paciente]
+(defmethod deve-assinar-pre-autorizacao-pedido? :sempre-autorizado [pedido]
   false)
 
 (defmethod deve-assinar-pre-autorizacao-pedido? PacienteParticular [pedido]
