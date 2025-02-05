@@ -4,6 +4,7 @@
 (defrecord PacienteParticular [id, nome, nascimento, situacao])
 (defrecord PacientePlanoDeSaude [id, nome, nascimento, situacao, plano])
 
+(println "Defprotocol")
 (defprotocol Cobravel
   (deve-assinar-pre-autorizacao? [paciente procedimento valor]))
 
@@ -36,6 +37,7 @@
   (pprint (deve-assinar-pre-autorizacao? plano, :coleta-de-sangue, 499990)))
 
 
+(println "Defmulti e Defmethod")
 (defmulti assinar-pre-autorizacao? class)
 
 (defmethod assinar-pre-autorizacao? PacienteParticular [paciente]
@@ -48,4 +50,36 @@
       plano (->PacientePlanoDeSaude 15, "Miguel", "1/04/06", :urgente [:raio-x, :ultra-som])]
   (pprint (assinar-pre-autorizacao? particular))
   (pprint (assinar-pre-autorizacao? plano)))
+
+
+(println "Defmulti e Defmethod, a sempre o que melhorar")
+(defn tipo-de-autorizador [pedido]
+  (let [paciente (:paciente pedido)
+        situacao (:situacao paciente)
+        urgencia? (= :urgente situacao)]
+    (if urgencia? :sempre-autorizado (class paciente))))
+
+(defmulti deve-assinar-pre-autorizacao-pedido? tipo-de-autorizador)
+
+(defmethod deve-assinar-pre-autorizacao-pedido? :sempre-autorizado [paciente]
+  false)
+
+(defmethod deve-assinar-pre-autorizacao-pedido? PacienteParticular [pedido]
+  (>= (:valor pedido 0) 50))
+
+(defmethod deve-assinar-pre-autorizacao-pedido? PacientePlanoDeSaude [pedido]
+  (not (some #(= % (:procedimento pedido)) (:plano(:paciente pedido)))))
+
+
+(let [particular (->PacienteParticular 15, "Miguel", "11/04/06", :urgente)
+      plano (->PacientePlanoDeSaude 15, "Miguel", "1/04/06", :urgente [:raio-x, :ultra-som])]
+  (pprint (deve-assinar-pre-autorizacao-pedido? {:paciente particular, :valor 1000, :procedimento :coleta-de-sangue}))
+  (pprint (deve-assinar-pre-autorizacao-pedido? {:paciente plano, :valor 1000, :procedimento :coleta-de-sangue})))
+
+
+(let [particular (->PacienteParticular 15, "Miguel", "11/04/06", :normal)
+      plano (->PacientePlanoDeSaude 15, "Miguel", "1/04/06", :normal [:raio-x, :ultra-som])]
+  (pprint (deve-assinar-pre-autorizacao-pedido? {:paciente particular, :valor 1000, :procedimento :coleta-de-sangue}))
+  (pprint (deve-assinar-pre-autorizacao-pedido? {:paciente plano, :valor 1000, :procedimento :coleta-de-sangue})))
+
 
